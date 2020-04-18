@@ -202,12 +202,17 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 			}
 		}
 		var pos;
-		var pDown	= function(e) { pos = e; e.preventDefault() }
+		var pDown	= function(e) { pos = e;  }
 		var pUp		= function(e) {
-			e.preventDefault()
 			var moved = false;
-			var dx = pos.clientX - e.clientX
-			var dy = pos.clientY - e.clientY
+			var dx=0,dy=0
+			if (e.type == "mouseup") {
+				dx = pos.clientX - e.clientX
+				dy = pos.clientY - e.clientY
+			} else if (e.type == "touchend") {
+				dx = pos.touches[0].clientX - e.changedTouches[0].clientX
+				dy = pos.touches[0].clientY - e.changedTouches[0].clientY
+			}
 			if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx)>20) {		// horizontal
 				if (dx>0)
 					moved = g.moveLeft();
@@ -228,7 +233,7 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 		doc.node.onmousedown	= pDown
 		doc.node.onmouseup	= pUp
 		doc.node.addEventListener('touchstart', pDown, false)
-		doc.node.addEventListener('touchmove', function(e){ e.preventDefault() }, false)
+		//doc.node.addEventListener('touchmove', function(e){ e.preventDefault() }, false)
 		doc.node.addEventListener('touchend', pUp, false)
 
 		return g
