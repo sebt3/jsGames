@@ -4,8 +4,14 @@
 screens.add("2048", function(screen) {
 	text.setDefaultFamily('Special Elite, cursive')
 	var svg  = this.add('svg').attr("viewBox","0 0 1920 1080");
-	var sw = 4, sh = 4;
-	var grid = svg.call(widgets.grid(sw,sh));
-	grid.addCell()
+	var sw	 = 4;
+	var tg	 = 2048;
+	var grid = svg.call(widgets.grid(sw,sw));
+	var np = svg.call(widgets.newPlay(function(size,target) {
+		sw	= size
+		tg	= target
+		grid.node.remove()
+		grid = svg.call(widgets.grid(size,size));
+	}));
 }).play("2048");
 }));

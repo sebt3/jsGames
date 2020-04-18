@@ -27,8 +27,8 @@
 				return g;
 			}
 			g.swap = function(spr) {
-				g.obj.remove();
-				set(spr);
+				spr.setup();
+				g.obj.attr('xlink:href',"#"+spr.sheet_id+"-"+spr.sprite_id)
 				return g;
 			}
 			g.father = this;

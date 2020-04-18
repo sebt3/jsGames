@@ -69,10 +69,10 @@ widgets.clickable		= function(_up, _down, _dis, cb) {
 			else		s.swap(up)
 			return ret
 		}
-		ret.setShift		= function(_shift) {shift = _shift}
-		ret.setUp		= function(_up) {up = _up;if(isUp)s.swap(up)}
-		ret.setDown		= function(_down) {down = _down;if(!isUp)s.swap(down)}
-		ret.setDisabled		= function(_dis) {dis = _dis;if(disabled)s.swap(dis)}
+		ret.setShift		= function(_shift) {shift = _shift;return ret}
+		ret.setUp		= function(_up) {up = _up;if(isUp)s.swap(up);return ret}
+		ret.setDown		= function(_down) {down = _down;if(!isUp)s.swap(down);return ret}
+		ret.setDisabled		= function(_dis) {dis = _dis;if(disabled)s.swap(dis);return ret}
 		ret.node.onmousedown	= function() { if(!disabled) { s.swap(down); isUp=false;g.moveTo(0,shift) }}
 		ret.node.onmouseout	= function() { if(!disabled) { s.swap(up);   isUp=true; g.moveTo(0,0) }}
 		ret.node.onmouseup	= function() { if(!disabled) { s.swap(up);   isUp=true; g.moveTo(0,0);cb.call(ret) }}

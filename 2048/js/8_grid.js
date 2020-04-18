@@ -230,12 +230,9 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 				}
 			}
 		}
-		doc.node.onmousedown	= pDown
-		doc.node.onmouseup	= pUp
 		doc.node.addEventListener('touchstart', pDown, false)
-		//doc.node.addEventListener('touchmove', function(e){ e.preventDefault() }, false)
 		doc.node.addEventListener('touchend', pUp, false)
-
+		g.addCell()
 		return g
 	}
 	return cons;
