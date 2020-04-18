@@ -73,102 +73,126 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 			}
 			return found
 		}
+		g.moveLeft		= function() {
+			var moved = false;
+			if (anim.count()>0) return false;
+			for (var y=0;y<hc;y++) {
+				var pos = 0;
+				for (var x=0;x<wc;x++) {
+					if (a[x][y] != null && x != pos) {
+						if (a[pos][y]!=null && a[pos][y].value() == a[x][y].value()) {
+							a[pos][y].merge(a[x][y])
+							pos++
+							a[x][y]=null;moved=true;
+						} else if (a[pos][y]!=null) {
+							pos++
+							if(pos!=x) {
+								a[pos][y] = a[x][y].pos(pos,y)
+								a[x][y]=null;moved=true;
+							}
+						} else {
+							a[pos][y] = a[x][y].pos(pos,y)
+							a[x][y]=null;moved=true;							}
+
+					}
+				}
+			}
+			return moved
+		}
+		g.moveRight		= function() {
+			var moved = false;
+			if (anim.count()>0) return false;
+			for (var y=0;y<hc;y++) {
+				var pos = wc-1;
+				for (var x=pos;x>=0;x--) {
+					if (a[x][y] != null && x != pos) {
+						if (a[pos][y]!=null && a[pos][y].value() == a[x][y].value()) {
+							a[pos][y].merge(a[x][y])
+							pos--
+							a[x][y]=null;moved=true;
+						} else if (a[pos][y]!=null) {
+							pos--
+							if(pos!=x) {
+								a[pos][y] = a[x][y].pos(pos,y)
+								a[x][y]=null;moved=true;
+							}
+						} else {
+							a[pos][y] = a[x][y].pos(pos,y)
+							a[x][y]=null;moved=true;							}
+
+					}
+				}
+			}
+			return moved
+		}
+		g.moveUp		= function() {
+			var moved = false;
+			if (anim.count()>0) return false;
+			for (var x=0;x<wc;x++) {
+				var pos = 0;
+				for (var y=0;y<hc;y++) {
+					if (a[x][y] != null && y != pos) {
+						if (a[x][pos]!=null && a[x][pos].value() == a[x][y].value()) {
+							a[x][pos].merge(a[x][y])
+							pos++
+							a[x][y]=null;moved=true;
+						} else if (a[x][pos]!=null) {
+							pos++
+							if(pos!=y) {
+								a[x][pos] = a[x][y].pos(x,pos)
+								a[x][y]=null;moved=true;
+							}
+						} else {
+							a[x][pos] = a[x][y].pos(x,pos)
+							a[x][y]=null;moved=true;							}
+
+					}
+				}
+			}
+			return moved
+		}
+		g.moveDown		= function() {
+			var moved = false;
+			if (anim.count()>0) return false;
+			for (var x=0;x<wc;x++) {
+				var pos = hc-1;
+				for (var y=pos;y>=0;y--) {
+					if (a[x][y] != null && y != pos) {
+						if (a[x][pos]!=null && a[x][pos].value() == a[x][y].value()) {
+							a[x][pos].merge(a[x][y])
+							pos--
+							a[x][y]=null;moved=true;
+						} else if (a[x][pos]!=null) {
+							pos--
+							if(pos!=y) {
+								a[x][pos] = a[x][y].pos(x,pos)
+								a[x][y]=null;moved=true;
+							}
+						} else {
+							a[x][pos] = a[x][y].pos(x,pos)
+							a[x][y]=null;moved=true;
+						}
+
+					}
+				}
+			}
+			return moved
+		}
 		doc.node.onkeyup	= function(e) {
 			var moved = false;
 			if (anim.count()>0) return;
 			switch(e.key) {
 			case "ArrowLeft":
-				for (var y=0;y<hc;y++) {
-					var pos = 0;
-					for (var x=0;x<wc;x++) {
-						if (a[x][y] != null && x != pos) {
-							if (a[pos][y]!=null && a[pos][y].value() == a[x][y].value()) {
-								a[pos][y].merge(a[x][y])
-								pos++
-								a[x][y]=null;moved=true;
-							} else if (a[pos][y]!=null) {
-								pos++
-								if(pos!=x) {
-									a[pos][y] = a[x][y].pos(pos,y)
-									a[x][y]=null;moved=true;
-								}
-							} else {
-								a[pos][y] = a[x][y].pos(pos,y)
-								a[x][y]=null;moved=true;							}
-
-						}
-					}
-				}
+				moved = g.moveLeft();
 				break;
 			case "ArrowRight":
-				for (var y=0;y<hc;y++) {
-					var pos = wc-1;
-					for (var x=pos;x>=0;x--) {
-						if (a[x][y] != null && x != pos) {
-							if (a[pos][y]!=null && a[pos][y].value() == a[x][y].value()) {
-								a[pos][y].merge(a[x][y])
-								pos--
-								a[x][y]=null;moved=true;
-							} else if (a[pos][y]!=null) {
-								pos--
-								if(pos!=x) {
-									a[pos][y] = a[x][y].pos(pos,y)
-									a[x][y]=null;moved=true;
-								}
-							} else {
-								a[pos][y] = a[x][y].pos(pos,y)
-								a[x][y]=null;moved=true;							}
-
-						}
-					}
-				}
+				moved = g.moveRight();
 				break;
 			case "ArrowUp":
-				for (var x=0;x<wc;x++) {
-					var pos = 0;
-					for (var y=0;y<hc;y++) {
-						if (a[x][y] != null && y != pos) {
-							if (a[x][pos]!=null && a[x][pos].value() == a[x][y].value()) {
-								a[x][pos].merge(a[x][y])
-								pos++
-								a[x][y]=null;moved=true;
-							} else if (a[x][pos]!=null) {
-								pos++
-								if(pos!=y) {
-									a[x][pos] = a[x][y].pos(x,pos)
-									a[x][y]=null;moved=true;
-								}
-							} else {
-								a[x][pos] = a[x][y].pos(x,pos)
-								a[x][y]=null;moved=true;							}
-
-						}
-					}
-				}
+				moved = g.moveUp();
 				break;
 			case "ArrowDown":
-				for (var x=0;x<wc;x++) {
-					var pos = hc-1;
-					for (var y=pos;y>=0;y--) {
-						if (a[x][y] != null && y != pos) {
-							if (a[x][pos]!=null && a[x][pos].value() == a[x][y].value()) {
-								a[x][pos].merge(a[x][y])
-								pos--
-								a[x][y]=null;moved=true;
-							} else if (a[x][pos]!=null) {
-								pos--
-								if(pos!=y) {
-									a[x][pos] = a[x][y].pos(x,pos)
-									a[x][y]=null;moved=true;
-								}
-							} else {
-								a[x][pos] = a[x][y].pos(x,pos)
-								a[x][y]=null;moved=true;
-							}
-
-						}
-					}
-				}
+				moved = g.moveDown();
 				break;
 			}
 			if(moved) {
@@ -177,6 +201,35 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 				}
 			}
 		}
+		var pos;
+		var pDown	= function(e) { pos = e; e.preventDefault() }
+		var pUp		= function(e) {
+			e.preventDefault()
+			var moved = false;
+			var dx = pos.clientX - e.clientX
+			var dy = pos.clientY - e.clientY
+			if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx)>20) {		// horizontal
+				if (dx>0)
+					moved = g.moveLeft();
+				else
+					moved = g.moveRight();
+			} else if (Math.abs(dx) < Math.abs(dy) && Math.abs(dy)>20) {	// vertical
+				if (dy>0)
+					moved = g.moveUp();
+				else
+					moved = g.moveDown();
+			}
+			if(moved) {
+				if(!g.addCell()) {
+					console.log("You loose")
+				}
+			}
+		}
+		doc.node.onmousedown	= pDown
+		doc.node.onmouseup	= pUp
+		doc.node.addEventListener('touchstart', pDown)
+		doc.node.addEventListener('touchend', pUp)
+
 		return g
 	}
 	return cons;
