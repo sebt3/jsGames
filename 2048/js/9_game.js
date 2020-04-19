@@ -17,6 +17,16 @@ screens.add("2048", function(screen) {
 	score	 = svg.call(widgets.score(screen.data, reset));
 	grid	 = svg.call(widgets.grid(score, sw,sw));
 	np	 = svg.call(widgets.newPlay(reset));
-	score.win();
+
+	// Draw game title
+	var g	 = svg.add("g")
+	var sz	 = 180
+	var sp	 = sz-10
+	g.call(game.text("sebt3's").color("#ff6f00").size(sz-30)).moveTo(100,0)
+	g.call(game.text("2").color("#7cb342").size(sz)).moveTo(0,200)
+	g.call(game.text("0").color("#aed581").size(sz)).moveTo(sp,200)
+	g.call(game.text("4").color("#fff176").size(sz)).moveTo(2*sp,200)
+	g.call(game.text("8").color("#fbc02d").size(sz)).moveTo(3*sp,200)
+	g.rotate(-35).moveTo(100, 550)
 }).play("2048");
 }));
