@@ -2,6 +2,7 @@
 	factory(global.game, global.game.widgets, global.game.sprites, global.game.anim, global.doc, global)
 })(this, (function(game, widgets, sprites, anim, doc, global) {
 widgets.score	= function(data, cb) {
+	// TODO: support a highScore table per configuration
 	var width	= 700;
 	var height	= 80;
 	var target	= 2048;
@@ -41,10 +42,7 @@ widgets.score	= function(data, cb) {
 		me.locked	= function()  { return locked }
 		me.add		= function(x) { val+=x;update();return me }
 		me.reset	= function(s,t) {size=s;target=t;val=0;locked=false;update();return me }
-		me.max		= function(v) {
-			console.log(typeof target,v,target)
-			if (typeof target == "number" && v>=target) me.win()
-		}
+		me.max		= function(v) { if (typeof target == "number" && v>=target) me.win() }
 		me.win		= function()  {
 			locked	= true
 			var dlg	= root.call(dialog)
@@ -52,7 +50,6 @@ widgets.score	= function(data, cb) {
 		}
 		me.loose	= function() {
 			locked	= true
-			console.log("you loose!")
 			var dlg	= root.call(dialog)
 			dlg.dlg.call(game.text("You won !!").size(60).color("green")).rotate(-15).moveTo(250,150)
 		}

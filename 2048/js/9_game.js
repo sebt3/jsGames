@@ -28,5 +28,7 @@ screens.add("2048", function(screen) {
 	g.call(game.text("4").color("#fff176").size(sz)).moveTo(2*sp,200)
 	g.call(game.text("8").color("#fbc02d").size(sz)).moveTo(3*sp,200)
 	g.rotate(-35).moveTo(100, 550)
+
+	//TODO : add the ability to rollback
 }).play("2048");
 }));
