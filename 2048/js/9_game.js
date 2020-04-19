@@ -3,15 +3,20 @@
 })(this, (function(game, widgets, sprites, text, anim, screens, doc, global) {
 screens.add("2048", function(screen) {
 	text.setDefaultFamily('Special Elite, cursive')
+	var score, grid, np;
 	var svg  = this.add('svg').attr("viewBox","0 0 1920 1080");
 	var sw	 = 4;
 	var tg	 = 2048;
-	var grid = svg.call(widgets.grid(sw,sw));
-	var np = svg.call(widgets.newPlay(function(size,target) {
+	var reset= function(size,target) {
 		sw	= size
 		tg	= target
-		grid.node.remove()
-		grid = svg.call(widgets.grid(size,size));
-	}));
+		score.reset(size,target);
+		grid.clean().node.remove()
+		grid = svg.call(widgets.grid(score,size,size));
+	}
+	score	 = svg.call(widgets.score(screen.data, reset));
+	grid	 = svg.call(widgets.grid(score, sw,sw));
+	np	 = svg.call(widgets.newPlay(reset));
+	score.win();
 }).play("2048");
 }));

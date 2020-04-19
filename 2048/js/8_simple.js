@@ -1,7 +1,65 @@
 (function(global, factory) {
 	factory(global.game, global.game.widgets, global.game.sprites, global.game.anim, global.doc, global)
 })(this, (function(game, widgets, sprites, anim, doc, global) {
+widgets.score	= function(data, cb) {
+	var width	= 700;
+	var height	= 80;
+	var target	= 2048;
+	var size	= 4;
+	var val		= 0;
+	var dialog	= function() {
+		var bd	= null, dlg = null;
+		var w	= 800, h = 500
+		var a	= widgets.box9("ui-btn-green-flat-up",11,400,80,1)
+		var b	= widgets.box9("ui-btn-green-flat-down",11,400,80,1)
+		var me	= this.add("g")
+		bd	= me.add("rect").attr("fill","#999").attr("width", 1920).attr("height",1080).attr("fill-opacity",0.6)
+		me.dlg	= me.call(widgets.box9("ui-square-white",11,w,h,1)).moveTo((1920-w)/2,(1080-h)/2)
+		me.close= function() {
+			if (dlg!=null) { dlg.node.remove();dlg=null }
+			if (bd!=null)  {  bd.node.remove(); bd=null }
+			me.node.remove()
+			cb(size,target)
+		}
+		me.call(widgets.clickable(sprites["ui-round-red"],sprites["ui-round-blue"],sprites["ui-round-red"],me.close))
+			.setIcon(sprites["ui-cross-white"]).moveTo((1920+w)/2-20,(1080-h)/2-20)
+		me.call(widgets.clickable(a,b,b,me.close)).setShift(3)
+			.moveTo((1920-400)/2,(1080+h)/2-100)
+			.setTextPos({x:110,y:50}).setText(game.text("Restart").size(40))
+		var sc = me.dlg.call(game.text("Score: "+val).size(80).color("black"))
+		sc.moveTo((w-sc.node.getBBox().width)/2-50,h-200)
+		return me;
+	}
+	return function() {
+		var root	= this;
+		var locked	= false;
+		var me		= this.add("g")
+		me.call(widgets.box9("ui-btn-yellow-raised-down",11,width,height,1))
+		var text	= me.call(game.text("Score: 0").size(80)).moveTo(40,65)
+		var update	= function()  { text.setText("Score: "+val) }
+		me.setTarget	= function(t) { target = t;return me }
+		me.locked	= function()  { return locked }
+		me.add		= function(x) { val+=x;update();return me }
+		me.reset	= function(s,t) {size=s;target=t;val=0;locked=false;update();return me }
+		me.max		= function(v) {
+			console.log(typeof target,v,target)
+			if (typeof target == "number" && v>=target) me.win()
+		}
+		me.win		= function()  {
+			locked	= true
+			var dlg	= root.call(dialog)
+			dlg.dlg.call(game.text("You won !!").size(60).color("green")).rotate(-15).moveTo(250,150)
+		}
+		me.loose	= function() {
+			locked	= true
+			console.log("you loose!")
+			var dlg	= root.call(dialog)
+			dlg.dlg.call(game.text("You won !!").size(60).color("green")).rotate(-15).moveTo(250,150)
+		}
 
+		return me
+	}
+}
 widgets.select	= function(width, values) {
 	return function() {
 		var ind, me	= this.add("g")

@@ -13,10 +13,11 @@ var rect	= function(col, w, h, r=8) {
 	}
 }
 
-widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
+widgets.grid	= function(sc, wc=4,hc=4, col1="#555",col2="#AAA") {
 	var h		= (height - margin)/hc - margin;
 	var w		= (width - margin)/wc - margin;
 	var a		= [];
+	var score	= sc;
 	for (var x=0;x<wc;x++) {
 		var t = []
 		for (var y=0;y<hc;y++) {
@@ -38,11 +39,34 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 			var b = margin + y*(h+margin);
 			return { x: a, y: b }
 		}
-		g.isFull	= function() {
+		g.canPlay	= function() {
+			for(var x=0;x<wc;x++) {
+				for(var y=0;y<hc;y++) {
+					if (a[x][y] == null) return true
+					if(x>0 && a[x-1][y].value() == a[x][y].value()) return true
+					if(y>0 && a[x][y-1].value() == a[x][y].value()) return true
+				}
+			}
+			return false
+		}
+		g.maxVal	= function() {
+			v = 0;
 			for(var x=0;x<wc;x++)
 				for(var y=0;y<hc;y++)
-					if (a[x][y] == null) return true
-			return false
+					if (a[x][y] != null && v<a[x][y].value()) v=a[x][y].value()
+			return v
+		}
+		g.haveVal	= function(val) { score.max(val) }
+		g.clean		= function() {
+			for(var x=0;x<wc;x++) {
+				for(var y=0;y<hc;y++) {
+					if (a[x][y] != null) {
+						a[x][y].node.remove()
+						a[x][y] = null
+					}
+				}
+			}
+			return g
 		}
 		g.addCell	= function() {
 			var x = rand(wc)
@@ -65,7 +89,14 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 					if (startTick == -1)
 						startTick=tick;
 					if (tick - startTick > aLength) {
-						a[x][y] = root.call(widgets.cell(g,x,y, 2*rand(2)+2))
+						if (!score.locked()) {
+							var v = 2*rand(2)+2
+							score.add(v)
+							a[x][y] = root.call(widgets.cell(g,x,y, v))
+							if (!g.canPlay()) {
+								score.loose()
+							}
+						}
 						anim.del(ani)
 					}
 				})
@@ -82,6 +113,7 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 					if (a[x][y] != null && x != pos) {
 						if (a[pos][y]!=null && a[pos][y].value() == a[x][y].value()) {
 							a[pos][y].merge(a[x][y])
+							score.add(10)
 							pos++
 							a[x][y]=null;moved=true;
 						} else if (a[pos][y]!=null) {
@@ -101,6 +133,7 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 		}
 		g.moveRight		= function() {
 			var moved = false;
+			if (score.locked()) return false;
 			if (anim.count()>0) return false;
 			for (var y=0;y<hc;y++) {
 				var pos = wc-1;
@@ -108,6 +141,7 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 					if (a[x][y] != null && x != pos) {
 						if (a[pos][y]!=null && a[pos][y].value() == a[x][y].value()) {
 							a[pos][y].merge(a[x][y])
+							score.add(10)
 							pos--
 							a[x][y]=null;moved=true;
 						} else if (a[pos][y]!=null) {
@@ -127,6 +161,7 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 		}
 		g.moveUp		= function() {
 			var moved = false;
+			if (score.locked()) return false;
 			if (anim.count()>0) return false;
 			for (var x=0;x<wc;x++) {
 				var pos = 0;
@@ -134,6 +169,7 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 					if (a[x][y] != null && y != pos) {
 						if (a[x][pos]!=null && a[x][pos].value() == a[x][y].value()) {
 							a[x][pos].merge(a[x][y])
+							score.add(10)
 							pos++
 							a[x][y]=null;moved=true;
 						} else if (a[x][pos]!=null) {
@@ -153,6 +189,7 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 		}
 		g.moveDown		= function() {
 			var moved = false;
+			if (score.locked()) return false;
 			if (anim.count()>0) return false;
 			for (var x=0;x<wc;x++) {
 				var pos = hc-1;
@@ -160,6 +197,7 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 					if (a[x][y] != null && y != pos) {
 						if (a[x][pos]!=null && a[x][pos].value() == a[x][y].value()) {
 							a[x][pos].merge(a[x][y])
+							score.add(10)
 							pos--
 							a[x][y]=null;moved=true;
 						} else if (a[x][pos]!=null) {
@@ -178,6 +216,12 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 			}
 			return moved
 		}
+		g.played		= function() {
+			if(!g.addCell()) {
+				score.loose()
+			} else
+				score.max(g.maxVal())
+		}
 		doc.node.onkeyup	= function(e) {
 			var moved = false;
 			if (anim.count()>0) return;
@@ -195,11 +239,7 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 				moved = g.moveDown();
 				break;
 			}
-			if(moved) {
-				if(!g.addCell()) {
-					console.log("You loose")
-				}
-			}
+			if(moved) g.played()
 		}
 		var pos;
 		var pDown	= function(e) { pos = e;  }
@@ -224,11 +264,7 @@ widgets.grid	= function(wc=4,hc=4, col1="#555",col2="#AAA") {
 				else
 					moved = g.moveDown();
 			}
-			if(moved) {
-				if(!g.addCell()) {
-					console.log("You loose")
-				}
-			}
+			if(moved) g.played()
 		}
 		doc.node.addEventListener('touchstart', pDown, false)
 		doc.node.addEventListener('touchend', pUp, false)

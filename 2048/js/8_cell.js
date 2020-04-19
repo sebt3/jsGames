@@ -41,6 +41,7 @@ widgets.cell	= function(grid, _x, _y, _v=2, r=8) {
 				t.size(dim.height/3).moveTo(dim.width/10,dim.height*16/27)
 			else if (val>10000)
 				t.size(dim.height/4).moveTo(dim.width/8,dim.height*7/12)
+			if(val>1024) grid.haveVal(val)
 			return c
 		}
 		var setPos	= function(_x,_y) {
